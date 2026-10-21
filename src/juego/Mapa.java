@@ -14,8 +14,8 @@ public class Mapa {
     int columnas;
     int anchoCalle;
 
-     //referencia a una cada del mapa
-    Casa casa;
+     //referencia a un arreglo de objetos (casa)
+    Casa[] casas;
 
 
     //Método constructor de Mapa
@@ -29,8 +29,9 @@ public class Mapa {
         this.columnas=4;
         this.anchoCalle=30;
 
-        this.casa = new Casa(this.x + this.anchoCalle + 40, this.y + this.anchoCalle + 25, 50, 30);
-    }
+        this.casas = new Casa[1];
+        this.casas[0] = new Casa(this.x + this.anchoCalle +40, this.y + this.anchoCalle + 25, 50, 30);
+        }
 
 
     public void dibujar(Entorno entorno){
@@ -51,6 +52,6 @@ public class Mapa {
         }
         }
 
-        this.casa.dibujar(entorno);
+        this.casas[0].dibujar(entorno);
     }
 }
