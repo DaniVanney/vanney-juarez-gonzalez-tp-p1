@@ -36,10 +36,12 @@ public class Mapa {
 
         double altoCuadra = (this.alto - (this.filas + 1) * this.anchoCalle) /this.filas;
 
-        double centroX = this.x + this.anchoCalle + anchoCuadra /2;
-        double centroY = this.y + this.anchoCalle + altoCuadra /2;
+        double centroY = this.y + this.anchoCalle +altoCuadra /2;
 
-        entorno.dibujarRectangulo(centroX, centroY, anchoCuadra, altoCuadra, 0, new Color(90, 140, 80));
+        for (int columna =0; columna < this.columnas; columna ++){
+            double centroX = this.x + this.anchoCalle + columna * (anchoCuadra + this.anchoCalle) + anchoCuadra /2;
 
+            entorno.dibujarRectangulo(centroX, centroY, anchoCuadra, altoCuadra, 0, new Color(90,140,80));
+        }
     }
 }
