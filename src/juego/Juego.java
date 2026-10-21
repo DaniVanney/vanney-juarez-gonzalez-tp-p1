@@ -17,7 +17,7 @@ public class Juego extends InterfaceJuego
 	Juego()
 	{
 		// Inicializa el objeto entorno
-		this.entorno = new Entorno(this, "Proyecto para TP", 800, 600);
+		this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
 		
 		// Inicializar lo que haga falta para el juego
 		// ...
@@ -36,6 +36,15 @@ public class Juego extends InterfaceJuego
 	{
 		// Procesamiento de un instante de tiempo
 		// ...
+
+		//Sector del mapa
+		this.entorno.dibujarRectangulo(400, 330, 800, 540, 0, new Color(70,70,70));
+
+		//Panel superior de info
+		this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30,30,30));
+
+		this.entorno.cambiarFont("Arial", 20, Color.WHITE);
+		this.entorno.escribirTexto("Delivery Rush", 20, 38);
 		
 	}
 	
