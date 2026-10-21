@@ -29,8 +29,10 @@ public class Mapa {
         this.columnas=4;
         this.anchoCalle=30;
 
-        this.casas = new Casa[1];
+        this.casas = new Casa[3];
         this.casas[0] = new Casa(this.x + this.anchoCalle +40, this.y + this.anchoCalle + 25, 50, 30);
+        this.casas[1] = new Casa(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 25, 50, 30);
+        this.casas[2] = new Casa(this.x + this.anchoCalle + 40, this.y + this.anchoCalle + 70, 50, 30);
         }
 
 
@@ -52,6 +54,8 @@ public class Mapa {
         }
         }
 
-        this.casas[0].dibujar(entorno);
+        for(int i = 0; i< this.casas.length; i++){
+            this.casas[i].dibujar(entorno);
+        }
     }
 }
