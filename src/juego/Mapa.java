@@ -4,16 +4,18 @@ import java.awt.Color;
 import entorno.Entorno;
 
 public class Mapa {
-    
+    //variables de la clase
     double x;
     double y;
     double ancho;
     double alto;
 
-
     int filas;
     int columnas;
     int anchoCalle;
+
+     //referencia a una cada del mapa
+    Casa casa;
 
 
     //Método constructor de Mapa
@@ -26,6 +28,8 @@ public class Mapa {
         this.filas =4;
         this.columnas=4;
         this.anchoCalle=30;
+
+        this.casa = new Casa(this.x + this.anchoCalle + 40, this.y + this.anchoCalle + 25, 50, 30);
     }
 
 
@@ -46,5 +50,7 @@ public class Mapa {
             entorno.dibujarRectangulo(centroX, centroY, anchoCuadra, altoCuadra, 0, new Color(90, 140, 80));
         }
         }
+
+        this.casa.dibujar(entorno);
     }
 }
