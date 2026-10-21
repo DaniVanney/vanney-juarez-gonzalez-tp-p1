@@ -10,14 +10,18 @@ public class Juego extends InterfaceJuego
 {
 	// El objeto Entorno que controla el tiempo y otros
 	private Entorno entorno;
+
+	Mapa mapa;
 	
 	// Variables y métodos propios de cada grupo
 	// ...
 	
 	Juego()
 	{
-		// Inicializa el objeto entorno
+		// Inicializa el objeto entorno  (Método constructor)
 		this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
+
+		this.mapa = new Mapa(0, 60, 800, 540);
 		
 		// Inicializar lo que haga falta para el juego
 		// ...
@@ -38,7 +42,7 @@ public class Juego extends InterfaceJuego
 		// ...
 
 		//Sector del mapa
-		this.entorno.dibujarRectangulo(400, 330, 800, 540, 0, new Color(70,70,70));
+		this.mapa.dibujar(this.entorno);
 
 		//Panel superior de info
 		this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30,30,30));
