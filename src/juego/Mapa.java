@@ -16,7 +16,7 @@ public class Mapa {
     int anchoCalle;
 
 
-
+    //Método constructor de Mapa
     public Mapa(double x, double y, double ancho, double alto){
         this.x = x;
         this.y = y;
@@ -35,16 +35,6 @@ public class Mapa {
         double anchoCuadra =(this.ancho - (this.columnas +1) * this.anchoCalle) / this.columnas;
 
         double altoCuadra = (this.alto - (this.filas + 1) * this.anchoCalle) /this.filas;
-
-        /* 
-        double centroY = this.y + this.anchoCalle +altoCuadra /2;
-
-        for (int columna =0; columna < this.columnas; columna ++){
-            double centroX = this.x + this.anchoCalle + columna * (anchoCuadra + this.anchoCalle) + anchoCuadra /2;
-
-            entorno.dibujarRectangulo(centroX, centroY, anchoCuadra, altoCuadra, 0, new Color(90,140,80));
-        }
-            */
 
 
         for(int fila =0; fila < this.filas; fila ++){

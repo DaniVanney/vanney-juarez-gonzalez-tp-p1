@@ -16,9 +16,10 @@ public class Juego extends InterfaceJuego
 	// Variables y métodos propios de cada grupo
 	// ...
 	
+	// Inicializa el objeto entorno  (Método constructor)
 	Juego()
 	{
-		// Inicializa el objeto entorno  (Método constructor)
+		
 		this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
 
 		this.mapa = new Mapa(0, 60, 800, 540);
@@ -51,6 +52,7 @@ public class Juego extends InterfaceJuego
 		this.entorno.escribirTexto("Delivery Rush", 20, 38);
 		
 	}
+
 	
 
 	@SuppressWarnings("unused")
