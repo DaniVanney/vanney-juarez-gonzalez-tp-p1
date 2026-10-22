@@ -31,18 +31,28 @@ public class Mapa {
         this.filas =4;
         this.columnas=4;
         this.anchoCalle=30;
-
+        /*
         this.casas = new Casa[3];
         this.casas[0] = new Casa(this.x + this.anchoCalle +40, this.y + this.anchoCalle + 25, 50, 30);
         this.casas[1] = new Casa(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 25, 50, 30);
         this.casas[2] = new Casa(this.x + this.anchoCalle + 40, this.y + this.anchoCalle + 70, 50, 30);
-    
+        */
+        this.casas = new Casa[this.columnas * 3];
+
         this.negocios = new Negocio[this.columnas];
 
         double anchoCuadra = (this.ancho - (this.columnas +1) * this.anchoCalle) / this.columnas;
         
         for(int columna =0; columna < this.columnas; columna ++){
             double inicioX = this.x + this.anchoCalle + columna * (anchoCuadra + this.anchoCalle);
+
+            int indiceCasa = columna * 3;
+            this.casas[indiceCasa] = new Casa(inicioX + 40, this.y + this.anchoCalle + 25, 50, 30);
+            this.casas[indiceCasa + 1] = new Casa(inicioX + 120, this.y + this.anchoCalle + 25, 50, 30);
+            this.casas[indiceCasa+2] = new Casa(inicioX + 40, this.y + this.anchoCalle + 70, 50, 30);
+
+
+
             this.negocios[columna] = new Negocio(inicioX + 120,this.y + this.anchoCalle + 70, 50, 30);
         }
     }
