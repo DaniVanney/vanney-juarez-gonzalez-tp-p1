@@ -47,11 +47,11 @@ public class Juego extends InterfaceJuego
 		// ...
 
 		if (this.entorno.estaPresionada('d')) {
-    		this.repartidor.moverDerecha();
+    		this.repartidor.moverDerecha(this.mapa.x + this.mapa.ancho);
 		}
 
 		if (this.entorno.estaPresionada('a')) {
-    		this.repartidor.moverIzquierda();
+    		this.repartidor.moverIzquierda(this.mapa.x);
 		}
 
 		//Sector del mapa

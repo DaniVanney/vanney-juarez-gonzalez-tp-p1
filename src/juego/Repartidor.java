@@ -29,12 +29,19 @@ public class Repartidor {
 
 
 
-    public void moverDerecha(){
+    public void moverDerecha(double limiteDerecho) {
         this.x = this.x + this.velocidad;
 
+        if (this.x + this.ancho / 2 > limiteDerecho) {
+            this.x = limiteDerecho - this.ancho / 2;
+        }
     }
 
-    public void moverIzquierda(){
+    public void moverIzquierda(double limiteIzquierdo) {
         this.x = this.x - this.velocidad;
+
+        if (this.x - this.ancho / 2 < limiteIzquierdo) {
+            this.x = limiteIzquierdo + this.ancho / 2;
+        }
     }
 }
