@@ -25,4 +25,16 @@ public class Repartidor {
     public void dibujar(Entorno entorno){
         entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.YELLOW);
     }
+
+
+
+
+    public void moverDerecha(){
+        this.x = this.x + this.velocidad;
+
+    }
+
+    public void moverIzquierda(){
+        this.x = this.x - this.velocidad;
+    }
 }

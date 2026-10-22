@@ -46,6 +46,14 @@ public class Juego extends InterfaceJuego
 		// Procesamiento de un instante de tiempo
 		// ...
 
+		if (this.entorno.estaPresionada('d')) {
+    		this.repartidor.moverDerecha();
+		}
+
+		if (this.entorno.estaPresionada('a')) {
+    		this.repartidor.moverIzquierda();
+		}
+
 		//Sector del mapa
 		this.mapa.dibujar(this.entorno);
 		this.repartidor.dibujar(this.entorno);
