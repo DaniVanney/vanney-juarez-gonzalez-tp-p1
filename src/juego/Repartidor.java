@@ -28,7 +28,7 @@ public class Repartidor {
 
 
 
-
+    //Métodos de movimiento horizontal
     public void moverDerecha(double limiteDerecho) {
         this.x = this.x + this.velocidad;
 
@@ -42,6 +42,23 @@ public class Repartidor {
 
         if (this.x - this.ancho / 2 < limiteIzquierdo) {
             this.x = limiteIzquierdo + this.ancho / 2;
+        }
+    }
+
+        //Métodos de movimiento vertical
+    public void moverArriba(double limiteSuperior) {
+        this.y = this.y - this.velocidad;
+
+        if (this.y - this.alto / 2 < limiteSuperior) {
+            this.y = limiteSuperior + this.alto / 2;
+        }
+    }
+
+    public void moverAbajo(double limiteInferior) {
+        this.y = this.y + this.velocidad;
+
+        if (this.y + this.alto / 2 > limiteInferior) {
+            this.y = limiteInferior - this.alto / 2;
         }
     }
 }
