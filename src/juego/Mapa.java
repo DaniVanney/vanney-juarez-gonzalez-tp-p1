@@ -39,7 +39,7 @@ public class Mapa {
         */
         this.casas = new Casa[this.columnas * 3];
 
-        this.negocios = new Negocio[this.columnas];
+        this.negocios = new Negocio[this.columnas * this.columnas];
 
         double anchoCuadra = (this.ancho - (this.columnas +1) * this.anchoCalle) / this.columnas;
         
@@ -51,9 +51,20 @@ public class Mapa {
             this.casas[indiceCasa + 1] = new Casa(inicioX + 120, this.y + this.anchoCalle + 25, 50, 30);
             this.casas[indiceCasa+2] = new Casa(inicioX + 40, this.y + this.anchoCalle + 70, 50, 30);
 
+        }
 
+        double altoCuadra =(this.alto - (this.filas + 1) * this.anchoCalle)/ this.filas;
 
-            this.negocios[columna] = new Negocio(inicioX + 120,this.y + this.anchoCalle + 70, 50, 30);
+        for (int fila = 0; fila < this.filas; fila++) {
+            double inicioY = this.y + this.anchoCalle + fila * (altoCuadra + this.anchoCalle);
+
+            for (int columna = 0; columna < this.columnas; columna++) {
+                double inicioX = this.x + this.anchoCalle+ columna * (anchoCuadra + this.anchoCalle);
+
+                int indiceNegocio = fila * this.columnas + columna;
+
+                this.negocios[indiceNegocio] = new Negocio(inicioX + 120, inicioY + 70, 50, 30);
+            }
         }
     }
 
