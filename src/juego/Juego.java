@@ -12,6 +12,7 @@ public class Juego extends InterfaceJuego
 	private Entorno entorno;
 
 	Mapa mapa;
+	Repartidor repartidor;
 	
 	// Variables y métodos propios de cada grupo
 	// ...
@@ -20,12 +21,15 @@ public class Juego extends InterfaceJuego
 	Juego()
 	{
 		
-		this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
-
-		this.mapa = new Mapa(0, 60, 800, 540);
+		
 		
 		// Inicializar lo que haga falta para el juego
 		// ...
+		this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
+
+		this.mapa = new Mapa(0, 60, 800, 540);
+
+		this.repartidor = new Repartidor(400, 585);
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -44,6 +48,7 @@ public class Juego extends InterfaceJuego
 
 		//Sector del mapa
 		this.mapa.dibujar(this.entorno);
+		this.repartidor.dibujar(this.entorno);
 
 		//Panel superior de info
 		this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30,30,30));
