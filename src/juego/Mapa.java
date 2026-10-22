@@ -37,9 +37,14 @@ public class Mapa {
         this.casas[1] = new Casa(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 25, 50, 30);
         this.casas[2] = new Casa(this.x + this.anchoCalle + 40, this.y + this.anchoCalle + 70, 50, 30);
     
-        this.negocios = new Negocio[1];
+        this.negocios = new Negocio[this.columnas];
 
-        this.negocios[0] = new Negocio(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 70,  50, 30);
+        double anchoCuadra = (this.ancho - (this.columnas +1) * this.anchoCalle) / this.columnas;
+        
+        for(int columna =0; columna < this.columnas; columna ++){
+            double inicioX = this.x + this.anchoCalle + columna * (anchoCuadra + this.anchoCalle);
+            this.negocios[columna] = new Negocio(inicioX + 120,this.y + this.anchoCalle + 70, 50, 30);
+        }
     }
 
 
