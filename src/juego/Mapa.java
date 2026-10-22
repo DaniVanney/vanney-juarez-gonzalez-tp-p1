@@ -17,8 +17,8 @@ public class Mapa {
      //referencia a un arreglo de objetos (casa)
     Casa[] casas;
 
-    //referencia a un objeto Negocio
-    Negocio negocio;
+    //referencia a un arreglo de objetos (negocio)
+    Negocio[] negocios;
 
 
     //Método constructor de Mapa
@@ -36,9 +36,11 @@ public class Mapa {
         this.casas[0] = new Casa(this.x + this.anchoCalle +40, this.y + this.anchoCalle + 25, 50, 30);
         this.casas[1] = new Casa(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 25, 50, 30);
         this.casas[2] = new Casa(this.x + this.anchoCalle + 40, this.y + this.anchoCalle + 70, 50, 30);
+    
+        this.negocios = new Negocio[1];
 
-        this.negocio = new Negocio(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 70, 50, 30);
-        }
+        this.negocios[0] = new Negocio(this.x + this.anchoCalle + 120, this.y + this.anchoCalle + 70,  50, 30);
+    }
 
 
     public void dibujar(Entorno entorno){
@@ -63,7 +65,9 @@ public class Mapa {
             this.casas[i].dibujar(entorno);
         }
 
-        this.negocio.dibujar(entorno);
-
+        
+        for(int i =0; i< this.negocios.length; i++){
+            this.negocios[i].dibujar(entorno);
+        }
     }
 }
