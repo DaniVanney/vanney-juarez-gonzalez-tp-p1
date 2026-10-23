@@ -107,18 +107,11 @@ public class Juego extends InterfaceJuego {
             if (this.mapa.hayColision(this.repartidor)) this.repartidor.y = yAnterior;
         }
 
-        // Retirar pedido (COLISIÓN DIRECTA CON EL NEGOCIO)
         // ---- Retirar pedido del negocio ----
         if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Negocio negocio = this.pedido.origen;
-            
-            // Verifica si el mouse está sobre el negocio
             boolean clicEnNegocio = negocio.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
-            
-            // Calcula la distancia real del repartidor al centro del negocio
             double dist = Math.sqrt(Math.pow(this.repartidor.x - negocio.x, 2) + Math.pow(this.repartidor.y - negocio.y, 2));
-            
-            // Si el clic fue en el negocio Y el repartidor está a menos de 60 px de su centro
             if (clicEnNegocio && dist < 60) {
                 this.pedido.retirar();
             }
@@ -142,7 +135,6 @@ public class Juego extends InterfaceJuego {
         // Entregar pedido (COLISIÓN DIRECTA CON LA CASA)
         if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Casa casa = this.pedido.destino;
-            // Verifica si está tocando la casa
             if (this.repartidor.colisionaCon(casa.x, casa.y, casa.ancho, casa.alto)) {
                 this.pedido.entregar();
                 this.pedidosEntregados++;
