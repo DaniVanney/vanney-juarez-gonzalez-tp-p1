@@ -1,165 +1,285 @@
 package juego;
 
-
 import java.awt.Color;
-
 import entorno.Entorno;
 import entorno.InterfaceJuego;
 
-public class Juego extends InterfaceJuego
-{
-	// El objeto Entorno que controla el tiempo y otros
-	private Entorno entorno;
+public class Juego extends InterfaceJuego {
+    private Entorno entorno;
 
-	Mapa mapa;
-	Repartidor repartidor;
-	Pedido pedido;
-	
-	int pedidosEntregados;
-	
-	// Variables y métodos propios de cada grupo
-	// ...
-	
-	// Inicializa el objeto entorno  (Método constructor)
-	Juego()
-	{
-		
-		
-		
-		// Inicializar lo que haga falta para el juego
-		// ...
-		this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
+    Mapa mapa;
+    Repartidor repartidor;
+    Pedido pedido;
 
-		this.mapa = new Mapa(0, 60, 800, 540);
+    Enemigo[] enemigos;
+    Bomba[] bombas;
+    Proyectil proyectil;
 
-		this.repartidor = new Repartidor(400, 585);
+    int pedidosEntregados;
+    int pedidosPerdidos;
+    int enemigosEliminados;
+    int vidas;
+    int ticks;
+    int tiempoLimitePedido;
+    int ticksPedidoActual;
 
-		int indiceNegocio = (int) (Math.random() * this.mapa.negocios.length);
-		int indiceCasa = (int) (Math.random() * this.mapa.casas.length);
+    int pedidosParaGanar;
+    int pedidosPerdidosParaPerder;
+    int vidasIniciales;
 
-		this.pedido = new Pedido(this.mapa.negocios[indiceNegocio], this.mapa.casas[indiceCasa]);
-		this.pedido.recibirEnNegocio();
+    Juego() {
+        this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
+        this.mapa = new Mapa(0, 60, 800, 540);
+        this.repartidor = new Repartidor(400, 585);
 
-		this.pedidosEntregados =0;
+        this.vidasIniciales = 3;
+        this.vidas = this.vidasIniciales;
+        this.pedidosParaGanar = 5;
+        this.pedidosPerdidosParaPerder = 5;
+        this.tiempoLimitePedido = 60 * 30; // 30 seg
 
+        this.pedidosEntregados = 0;
+        this.pedidosPerdidos = 0;
+        this.enemigosEliminados = 0;
+        this.ticks = 0;
+        this.ticksPedidoActual = 0;
 
-		// Inicia el juego!
-		this.entorno.iniciar();
-	}
+        this.bombas = new Bomba[0];
+        this.proyectil = null;
 
-	/**
-	 * Durante el juego, el método tick() será ejecutado en cada instante y 
-	 * por lo tanto es el método más importante de esta clase. Aquí se debe 
-	 * actualizar el estado interno del juego para simular el paso del tiempo 
-	 * (ver el enunciado del TP para mayor detalle).
-	 */
-	public void tick()
-	{
-		// Procesamiento de un instante de tiempo
-		// ...
+        this.enemigos = new Enemigo[4];
+        this.generarEnemigo(0);
+        this.generarEnemigo(1);
+        this.generarEnemigo(2);
+        this.generarEnemigo(3);
 
-		if (this.entorno.estaPresionada('d')) {
-    		double xAnterior = this.repartidor.x;
+        this.crearNuevoPedido();
+        this.entorno.iniciar();
+    }
 
-    		this.repartidor.moverDerecha(this.mapa.x + this.mapa.ancho);
+    private void generarEnemigo(int indice) {
+        boolean horizontal = Math.random() < 0.5;
+        boolean dejaBombas = Math.random() < 0.4;
+        double x, y;
+        if (horizontal) {
+            int filaCalle = (int) (Math.random() * (this.mapa.filas + 1));
+            y = this.mapa.obtenerYCentroCalleHorizontal(filaCalle);
+            x = this.mapa.x + 20 + Math.random() * (this.mapa.ancho - 40);
+        } else {
+            int colCalle = (int) (Math.random() * (this.mapa.columnas + 1));
+            x = this.mapa.obtenerXCentroCalleVertical(colCalle);
+            y = this.mapa.y + 20 + Math.random() * (this.mapa.alto - 40);
+        }
+        this.enemigos[indice] = new Enemigo(x, y, horizontal, dejaBombas);
+    }
 
-    		if (this.mapa.hayColision(this.repartidor)) {
-        		this.repartidor.x = xAnterior;
-    		}
-		}
+    private void crearNuevoPedido() {
+        int indiceNegocio = (int) (Math.random() * this.mapa.negocios.length);
+        int indiceCasa = (int) (Math.random() * this.mapa.casas.length);
+        this.pedido = new Pedido(this.mapa.negocios[indiceNegocio], this.mapa.casas[indiceCasa]);
+        this.pedido.recibirEnNegocio();
+        this.ticksPedidoActual = 0;
+    }
 
-		
-		if (this.entorno.estaPresionada('a')) {
-    		double xAnterior = this.repartidor.x;
+    public void tick() {
+        this.ticks++;
+        this.ticksPedidoActual++;
 
-    		this.repartidor.moverIzquierda(this.mapa.x);
+        // Movimiento del repartidor
+        if (this.entorno.estaPresionada('d') || this.entorno.estaPresionada(this.entorno.TECLA_DERECHA)) {
+            double xAnterior = this.repartidor.x;
+            this.repartidor.moverDerecha(this.mapa.x + this.mapa.ancho);
+            if (this.mapa.hayColision(this.repartidor)) this.repartidor.x = xAnterior;
+        }
+        if (this.entorno.estaPresionada('a') || this.entorno.estaPresionada(this.entorno.TECLA_IZQUIERDA)) {
+            double xAnterior = this.repartidor.x;
+            this.repartidor.moverIzquierda(this.mapa.x);
+            if (this.mapa.hayColision(this.repartidor)) this.repartidor.x = xAnterior;
+        }
+        if (this.entorno.estaPresionada('w') || this.entorno.estaPresionada(this.entorno.TECLA_ARRIBA)) {
+            double yAnterior = this.repartidor.y;
+            this.repartidor.moverArriba(this.mapa.y);
+            if (this.mapa.hayColision(this.repartidor)) this.repartidor.y = yAnterior;
+        }
+        if (this.entorno.estaPresionada('s') || this.entorno.estaPresionada(this.entorno.TECLA_ABAJO)) {
+            double yAnterior = this.repartidor.y;
+            this.repartidor.moverAbajo(this.mapa.y + this.mapa.alto);
+            if (this.mapa.hayColision(this.repartidor)) this.repartidor.y = yAnterior;
+        }
 
-    		if (this.mapa.hayColision(this.repartidor)) {
-        		this.repartidor.x = xAnterior;
-    		}
-		}
+        // Retirar pedido (COLISIÓN DIRECTA CON EL NEGOCIO)
+        // ---- Retirar pedido del negocio ----
+        if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+            Negocio negocio = this.pedido.origen;
+            
+            // Verifica si el mouse está sobre el negocio
+            boolean clicEnNegocio = negocio.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+            
+            // Calcula la distancia real del repartidor al centro del negocio
+            double dist = Math.sqrt(Math.pow(this.repartidor.x - negocio.x, 2) + Math.pow(this.repartidor.y - negocio.y, 2));
+            
+            // Si el clic fue en el negocio Y el repartidor está a menos de 60 px de su centro
+            if (clicEnNegocio && dist < 60) {
+                this.pedido.retirar();
+            }
+        }
 
-		if (this.entorno.estaPresionada('w')) {
-    		double yAnterior = this.repartidor.y;
+        // ---- Entregar pedido ----
+        if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+            Casa casa = this.pedido.destino;
+            
+            boolean clicEnCasa = casa.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+            
+            double dist = Math.sqrt(Math.pow(this.repartidor.x - casa.x, 2) + Math.pow(this.repartidor.y - casa.y, 2));
+            
+            if (clicEnCasa && dist < 60) {
+                this.pedido.entregar();
+                this.pedidosEntregados++;
+                this.crearNuevoPedido();
+            }
+        }
 
-    		this.repartidor.moverArriba(this.mapa.y);
+        // Entregar pedido (COLISIÓN DIRECTA CON LA CASA)
+        if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+            Casa casa = this.pedido.destino;
+            // Verifica si está tocando la casa
+            if (this.repartidor.colisionaCon(casa.x, casa.y, casa.ancho, casa.alto)) {
+                this.pedido.entregar();
+                this.pedidosEntregados++;
+                this.crearNuevoPedido();
+            }
+        }
 
-    		if (this.mapa.hayColision(this.repartidor)) {
-        		this.repartidor.y = yAnterior;
-    		}
-		}
+        // Pedido perdido por tiempo
+        if (this.pedido.estaActivo() && this.ticksPedidoActual > this.tiempoLimitePedido) {
+            this.pedido.perder();
+            this.pedidosPerdidos++;
+            this.crearNuevoPedido();
+        }
 
-		if (this.entorno.estaPresionada('s')) {
-    		double yAnterior = this.repartidor.y;
+        // Disparo
+        if (this.entorno.sePresionoBoton(this.entorno.BOTON_IZQUIERDO) && this.proyectil == null) {
+            this.proyectil = new Proyectil(this.repartidor.x, this.repartidor.y, this.repartidor.dirX, this.repartidor.dirY);
+        }
 
-    		this.repartidor.moverAbajo(this.mapa.y + this.mapa.alto);
+        // Actualizar proyectil
+        if (this.proyectil != null) {
+            this.proyectil.mover();
+            for (int i = 0; i < this.enemigos.length; i++) {
+                Enemigo e = this.enemigos[i];
+                if (e != null && this.proyectil != null && this.proyectil.colisionaCon(e.x, e.y, e.ancho, e.alto)) {
+                    this.enemigos[i] = null;
+                    this.proyectil = null;
+                    this.enemigosEliminados++;
+                    this.generarEnemigo(i);
+                    break;
+                }
+            }
+            if (this.proyectil != null && this.proyectil.fueraDe(this.mapa.x, this.mapa.x + this.mapa.ancho, this.mapa.y, this.mapa.y + this.mapa.alto)) {
+                this.proyectil = null;
+            }
+        }
 
-    		if (this.mapa.hayColision(this.repartidor)) {
-        		this.repartidor.y = yAnterior;
-    		}
-		}
+        // Actualizar enemigos
+        for (int i = 0; i < this.enemigos.length; i++) {
+            Enemigo e = this.enemigos[i];
+            if (e == null) continue;
+            e.mover(this.mapa.x, this.mapa.x + this.mapa.ancho, this.mapa.y, this.mapa.y + this.mapa.alto);
+            if (e.dejaBombas) {
+                e.temporizadorBomba--;
+                if (e.temporizadorBomba <= 0) {
+                	this.agregarBomba(new Bomba(e.x, e.y, this.mapa.anchoCalle, e.horizontal));
+                    e.temporizadorBomba = e.intervaloBomba;
+                }
+            }
+            if (e.colisionaCon(this.repartidor.x, this.repartidor.y, this.repartidor.ancho, this.repartidor.alto)) {
+                this.vidas--;
+                if (this.pedido.estado.equals("En camino")) {
+                    this.pedido.perder();
+                    this.pedidosPerdidos++;
+                    this.crearNuevoPedido();
+                }
+                this.enemigos[i] = null;
+                this.generarEnemigo(i);
+            }
+        }
 
-			//bloque para retirar el pedido del negocio
-		if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+        // Actualizar bombas
+        for (int i = 0; i < this.bombas.length; i++) {
+            Bomba b = this.bombas[i];
+            if (b == null) continue;
+            b.actualizar();
+            if (b.afectaA(this.repartidor.x, this.repartidor.y, this.repartidor.ancho, this.repartidor.alto)) {
+                this.vidas = 0; 
+            }
+            if (b.terminada()) this.bombas[i] = null;
+        }
 
-    		Negocio negocio = this.pedido.origen;
-   			double yFlecha = this.mapa.obtenerYFlechaNegocio(negocio);
+        // Victoria / Derrota
+        if (this.vidas <= 0 || this.pedidosPerdidos >= this.pedidosPerdidosParaPerder) {
+            this.dibujarPantallaFinal("PERDISTE");
+            return;
+        }
+        if (this.pedidosEntregados >= this.pedidosParaGanar) {
+            this.dibujarPantallaFinal("GANASTE");
+            return;
+        }
 
-    		boolean sobreFlecha =Math.abs(this.repartidor.x - negocio.x) <= this.repartidor.ancho / 2 && Math.abs(this.repartidor.y - yFlecha) <= this.repartidor.alto / 2;
+        // ---- DIBUJAR ----
+        this.mapa.dibujar(this.entorno);
 
-    		boolean clicEnNegocio = negocio.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+        // Dibujar flechas
+        if (this.pedido.estado.equals("Esperando") || this.pedido.estado.equals("En camino")) {
+            this.mapa.dibujarFlechaCasaRoja(this.entorno, this.pedido.destino);
+        }
+        if (this.pedido.estado.equals("Esperando")) {
+            this.mapa.dibujarFlechaNegocio(this.entorno, this.pedido.origen);
+        }
 
-    		if (sobreFlecha && clicEnNegocio) {
-        		this.pedido.retirar();
-    		}
-		}
-		//Bloque para concretar la entrega del pedido
-		if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+        for (int i = 0; i < this.enemigos.length; i++) {
+            if (this.enemigos[i] != null) this.enemigos[i].dibujar(this.entorno);
+        }
+        for (int i = 0; i < this.bombas.length; i++) {
+            if (this.bombas[i] != null) this.bombas[i].dibujar(this.entorno);
+        }
+        if (this.proyectil != null) this.proyectil.dibujar(this.entorno);
 
-    		Casa casa = this.pedido.destino;
-    		double yFlecha = this.mapa.obtenerYFlechaCasa(casa);
-    		boolean sobreFlecha =Math.abs(this.repartidor.x - casa.x) <= this.repartidor.ancho / 2 && Math.abs(this.repartidor.y - yFlecha) <= this.repartidor.alto / 2;
-			boolean clicEnCasa = casa.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+        this.repartidor.dibujar(this.entorno);
+        this.dibujarPanel();
+    }
 
-    		if (sobreFlecha && clicEnCasa) {
-        		this.pedido.entregar();
-    			this.pedidosEntregados++;
-    		}
-		}
+    private void agregarBomba(Bomba b) {
+        Bomba[] nuevo = new Bomba[this.bombas.length + 1];
+        for (int i = 0; i < this.bombas.length; i++) nuevo[i] = this.bombas[i];
+        nuevo[this.bombas.length] = b;
+        this.bombas = nuevo;
+    }
 
+    private void dibujarPanel() {
+        this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30, 30, 30));
+        this.entorno.cambiarFont("Arial", 14, Color.WHITE);
 
-		//Sector del mapa
-		this.mapa.dibujar(this.entorno);
-		if (this.pedido.estado.equals("En camino")) {
-    		this.mapa.dibujarFlechaCasa(this.entorno, this.pedido.destino);
-		}
+        String tiempo = "Tiempo: " + (this.ticks / 60) + "s";
+        String vidasStr = "Vidas: " + this.vidas;
+        String entregados = "Entregados: " + this.pedidosEntregados;
+        String eliminados = "Eliminados: " + this.enemigosEliminados;
+        String estado = "Pedido: " + this.pedido.estado;
 
-		if (this.pedido.estado.equals("Esperando")) {
-    		this.mapa.dibujarFlechaNegocio(
-        	this.entorno, this.pedido.origen
-    		);
-		}
+        this.entorno.escribirTexto(tiempo, 15, 38);
+        this.entorno.escribirTexto(vidasStr, 120, 38);
+        this.entorno.escribirTexto(entregados, 210, 38);
+        this.entorno.escribirTexto(eliminados, 360, 38);
+        this.entorno.escribirTexto(estado, 530, 38);
+    }
 
+    private void dibujarPantallaFinal(String mensaje) {
+        this.entorno.dibujarRectangulo(400, 300, 800, 600, 0, new Color(0, 0, 0, 200));
+        this.entorno.cambiarFont("Arial", 48, Color.WHITE);
+        this.entorno.escribirTexto(mensaje, 300, 300);
+    }
 
-
-		this.repartidor.dibujar(this.entorno);
-
-		//Panel superior de info
-		this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30,30,30));
-
-		this.entorno.cambiarFont("Arial", 20, Color.WHITE);
-		this.entorno.escribirTexto("Delivery Rush", 20, 38);
-		this.entorno.escribirTexto("Pedido: " + this.pedido.estado, 210,38);
-		String entregados = "Entregados: " + this.pedidosEntregados;
-		// ...
-		this.entorno.escribirTexto(entregados, 260, 38);
-	}
-
-	
-
-	@SuppressWarnings("unused")
-	public static void main(String[] args)
-	{
-		Juego juego = new Juego();
-	}
+    @SuppressWarnings("unused")
+    public static void main(String[] args) {
+        Juego juego = new Juego();
+    }
 }
