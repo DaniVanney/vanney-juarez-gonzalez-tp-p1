@@ -13,6 +13,7 @@ public class Juego extends InterfaceJuego
 
 	Mapa mapa;
 	Repartidor repartidor;
+	Pedido pedido;
 	
 	// Variables y métodos propios de cada grupo
 	// ...
@@ -30,6 +31,13 @@ public class Juego extends InterfaceJuego
 		this.mapa = new Mapa(0, 60, 800, 540);
 
 		this.repartidor = new Repartidor(400, 585);
+
+		int indiceNegocio = (int) (Math.random() * this.mapa.negocios.length);
+		int indiceCasa = (int) (Math.random() * this.mapa.casas.length);
+
+		this.pedido = new Pedido(this.mapa.negocios[indiceNegocio], this.mapa.casas[indiceCasa]);
+		this.pedido.recibirEnNegocio();
+
 
 		// Inicia el juego!
 		this.entorno.iniciar();
@@ -96,6 +104,7 @@ public class Juego extends InterfaceJuego
 
 		this.entorno.cambiarFont("Arial", 20, Color.WHITE);
 		this.entorno.escribirTexto("Delivery Rush", 20, 38);
+		this.entorno.escribirTexto("Pedido: " + this.pedido.estado, 210,38);ss
 		
 	}
 
