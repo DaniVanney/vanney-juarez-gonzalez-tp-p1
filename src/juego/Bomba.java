@@ -17,8 +17,7 @@ public class Bomba {
         this.x = x;
         this.y = y;
         
-        // Si el enemigo va horizontal, la explosión cubre el largo de la calle (X) y el ancho (Y).
-        // Si va vertical, cubre el ancho de la calle (X) y el largo (Y).
+ 
         if (esHorizontal) {
             this.anchoExplosion = anchoCalle * 3; // Largo de la calle
             this.altoExplosion = anchoCalle;      // Ancho de la calle
@@ -37,19 +36,18 @@ public class Bomba {
             this.temporizador--;
             if (this.temporizador <= 0) {
                 this.explotando = true;
-                this.tiempoExplosion = 30; // ~0.5s de explosión visible
+                this.tiempoExplosion = 30; // 
             }
         } else {
             this.tiempoExplosion--;
         }
     }
 
-    // La bomba terminó su ciclo (explosión completada)
+
     public boolean terminada() {
         return this.explotando && this.tiempoExplosion <= 0;
     }
 
-    // ¿El área de efecto (ya sea la bomba o la explosión) toca a este rectángulo?
     public boolean afectaA(double otroX, double otroY, double otroAncho, double otroAlto) {
         boolean coincideX = Math.abs(this.x - otroX) < (this.anchoExplosion + otroAncho) / 2;
         boolean coincideY = Math.abs(this.y - otroY) < (this.altoExplosion + otroAlto) / 2;
@@ -58,10 +56,8 @@ public class Bomba {
 
     public void dibujar(Entorno entorno) {
         if (!this.explotando) {
-            // Mientras no explota, dibuja un círculo negro (o un rectángulo si preferís)
             entorno.dibujarCirculo(this.x, this.y, 12, Color.BLACK);
-        } else {
-            // Cuando explota, dibuja el área de daño en forma de rectángulo naranja
+
             entorno.dibujarRectangulo(this.x, this.y,
                     this.anchoExplosion, this.altoExplosion, 0, new Color(255, 120, 0));
         }
