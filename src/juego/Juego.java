@@ -55,7 +55,13 @@ public class Juego extends InterfaceJuego
 		}
 
 		if (this.entorno.estaPresionada('w')) {
+    		double yAnterior = this.repartidor.y;
+
     		this.repartidor.moverArriba(this.mapa.y);
+
+    		if (this.mapa.hayColision(this.repartidor)) {
+        		this.repartidor.y = yAnterior;
+    		}
 		}
 
 		if (this.entorno.estaPresionada('s')) {
