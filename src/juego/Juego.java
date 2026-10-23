@@ -95,6 +95,22 @@ public class Juego extends InterfaceJuego
     		}
 		}
 
+
+		if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+
+    		Negocio negocio = this.pedido.origen;
+   			double yFlecha = this.mapa.obtenerYFlechaNegocio(negocio);
+
+    		boolean sobreFlecha =Math.abs(this.repartidor.x - negocio.x) <= this.repartidor.ancho / 2 && Math.abs(this.repartidor.y - yFlecha) <= this.repartidor.alto / 2;
+
+    		boolean clicEnNegocio = negocio.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+
+    		if (sobreFlecha && clicEnNegocio) {
+        		this.pedido.retirar();
+    		}
+		}
+
+
 		//Sector del mapa
 		this.mapa.dibujar(this.entorno);
 		this.repartidor.dibujar(this.entorno);

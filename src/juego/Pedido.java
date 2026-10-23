@@ -19,5 +19,12 @@ public class Pedido {
             this.estado = "Esperando";
         }
     }
+
+
+    public void retirar() {
+        if (this.estado.equals("Esperando")) {
+            this.estado = "En camino";
+        }
+}
     
 }
