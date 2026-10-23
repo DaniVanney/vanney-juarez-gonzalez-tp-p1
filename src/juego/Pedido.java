@@ -25,6 +25,12 @@ public class Pedido {
         if (this.estado.equals("Esperando")) {
             this.estado = "En camino";
         }
-}
+    }
+
+    public void entregar() {
+        if (this.estado.equals("En camino")) {
+            this.estado = "Entregado";
+        }
+    }
     
 }

@@ -20,5 +20,9 @@ public class Casa {
     public void dibujar(Entorno entorno){
         entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, new Color(190, 110, 80));
     }
+
+    public boolean contienePunto(double puntoX, double puntoY) {
+        return Math.abs(this.x - puntoX) <= this.ancho / 2 && Math.abs(this.y - puntoY) <= this.alto / 2;
+    }
     
 }

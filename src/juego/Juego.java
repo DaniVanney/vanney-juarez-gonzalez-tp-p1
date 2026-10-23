@@ -110,6 +110,18 @@ public class Juego extends InterfaceJuego
     		}
 		}
 
+		if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+
+    		Casa casa = this.pedido.destino;
+    		double yFlecha = this.mapa.obtenerYFlechaCasa(casa);
+    		boolean sobreFlecha =Math.abs(this.repartidor.x - casa.x) <= this.repartidor.ancho / 2 && Math.abs(this.repartidor.y - yFlecha) <= this.repartidor.alto / 2;
+			boolean clicEnCasa = casa.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+
+    		if (sobreFlecha && clicEnCasa) {
+        		this.pedido.entregar();
+    		}
+		}
+
 
 		//Sector del mapa
 		this.mapa.dibujar(this.entorno);
@@ -122,6 +134,8 @@ public class Juego extends InterfaceJuego
         	this.entorno, this.pedido.origen
     		);
 		}
+
+
 
 		this.repartidor.dibujar(this.entorno);
 
