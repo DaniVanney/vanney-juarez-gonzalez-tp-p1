@@ -98,6 +98,16 @@ public class Mapa {
         return false;
     }
 
+    public void dibujarFlechaNegocio(Entorno entorno, Negocio negocio) {
+        double altoCuadra =(this.alto - (this.filas + 1) * this.anchoCalle)/this.filas;
+        int fila = (int) ((negocio.y - this.y) / (altoCuadra + this.anchoCalle));
+        double xFlecha = negocio.x;
+        double yFlecha = this.y+ (fila + 1) * (altoCuadra + this.anchoCalle)+ this.anchoCalle / 2.0;
+
+        entorno.dibujarRectangulo(xFlecha, yFlecha + 5,6, 8, 0, Color.YELLOW);
+        entorno.dibujarTriangulo(xFlecha, yFlecha - 3,12, 18, -Math.PI / 2, Color.YELLOW);
+    }
+
 
     public void dibujar(Entorno entorno){
         entorno.dibujarRectangulo(this.x + this.ancho/2, this.y + this.alto/2, this.ancho, this.alto, 0, new Color(70, 70, 70));

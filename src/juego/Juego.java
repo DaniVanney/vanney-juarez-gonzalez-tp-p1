@@ -99,12 +99,18 @@ public class Juego extends InterfaceJuego
 		this.mapa.dibujar(this.entorno);
 		this.repartidor.dibujar(this.entorno);
 
+		if (this.pedido.estado.equals("Esperando")) {
+    		this.mapa.dibujarFlechaNegocio(
+        	this.entorno, this.pedido.origen
+    		);
+		}
+
 		//Panel superior de info
 		this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30,30,30));
 
 		this.entorno.cambiarFont("Arial", 20, Color.WHITE);
 		this.entorno.escribirTexto("Delivery Rush", 20, 38);
-		this.entorno.escribirTexto("Pedido: " + this.pedido.estado, 210,38);ss
+		this.entorno.escribirTexto("Pedido: " + this.pedido.estado, 210,38);
 		
 	}
 
