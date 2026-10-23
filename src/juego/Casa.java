@@ -24,5 +24,4 @@ public class Casa {
     public boolean contienePunto(double puntoX, double puntoY) {
         return Math.abs(this.x - puntoX) <= this.ancho / 2 && Math.abs(this.y - puntoY) <= this.alto / 2;
     }
-    
 }
