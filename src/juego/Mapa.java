@@ -98,6 +98,37 @@ public class Mapa {
         return false;
     }
 
+    public double obtenerYFlechaCasa(Casa casa) {
+        double altoCuadra =(this.alto - (this.filas + 1) * this.anchoCalle)/ this.filas;
+
+        int fila = (int) ((casa.y - this.y) / (altoCuadra + this.anchoCalle)
+        );
+
+        double inicioY = this.y + this.anchoCalle+ fila * (altoCuadra + this.anchoCalle);
+        double centroCuadraY = inicioY + altoCuadra / 2;
+
+        if (casa.y < centroCuadraY) {
+            return inicioY - this.anchoCalle / 2.0;
+        }
+
+        return inicioY + altoCuadra + this.anchoCalle / 2.0;
+    }
+
+    public void dibujarFlechaCasa(Entorno entorno, Casa casa) {
+        double xFlecha = casa.x;
+        double yFlecha = this.obtenerYFlechaCasa(casa);
+
+        int direccion = 1;
+
+        if (casa.y < yFlecha) {
+            direccion = -1;
+        }
+
+        entorno.dibujarRectangulo(xFlecha, yFlecha - direccion * 5,6, 8, 0, Color.YELLOW);
+
+        entorno.dibujarTriangulo(xFlecha, yFlecha + direccion * 3,12, 18, direccion * Math.PI / 2, Color.YELLOW);
+    }
+
     public double obtenerYFlechaNegocio(Negocio negocio) {
         double altoCuadra =(this.alto - (this.filas + 1) * this.anchoCalle)/ this.filas;
         int fila = (int) ((negocio.y - this.y) / (altoCuadra + this.anchoCalle));

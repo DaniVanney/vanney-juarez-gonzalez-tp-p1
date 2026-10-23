@@ -113,13 +113,17 @@ public class Juego extends InterfaceJuego
 
 		//Sector del mapa
 		this.mapa.dibujar(this.entorno);
-		this.repartidor.dibujar(this.entorno);
+		if (this.pedido.estado.equals("En camino")) {
+    		this.mapa.dibujarFlechaCasa(this.entorno, this.pedido.destino);
+		}
 
 		if (this.pedido.estado.equals("Esperando")) {
     		this.mapa.dibujarFlechaNegocio(
         	this.entorno, this.pedido.origen
     		);
 		}
+
+		this.repartidor.dibujar(this.entorno);
 
 		//Panel superior de info
 		this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30,30,30));
