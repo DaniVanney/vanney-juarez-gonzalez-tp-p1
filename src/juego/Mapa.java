@@ -39,7 +39,7 @@ public class Mapa {
         */
         this.casas = new Casa[this.filas * this.columnas * 3];
 
-        this.negocios = new Negocio[this.columnas * this.columnas];
+        this.negocios = new Negocio[this.filas * this.columnas];
 
         double anchoCuadra = (this.ancho - (this.columnas +1) * this.anchoCalle) / this.columnas;
 
@@ -74,6 +74,28 @@ public class Mapa {
                 this.negocios[indiceNegocio] = new Negocio(inicioX + 120, inicioY + 70, 50, 30);
             }
         }
+    }
+
+
+    public boolean hayColision(Repartidor repartidor) {
+        for (int i = 0; i < this.casas.length; i++) {
+            Casa casa = this.casas[i];
+
+            if (repartidor.colisionaCon(
+                    casa.x, casa.y, casa.ancho, casa.alto)) {
+                return true;
+            }
+        }
+
+        for (int i = 0; i < this.negocios.length; i++) {
+            Negocio negocio = this.negocios[i];
+
+            if (repartidor.colisionaCon(negocio.x, negocio.y, negocio.ancho, negocio.alto)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

@@ -11,7 +11,7 @@ public class Repartidor {
     double velocidad;
 
 
-
+        //Método constructor de repartidor
     public Repartidor(double x, double y){
         this.x = x;
         this.y=y;
@@ -20,8 +20,16 @@ public class Repartidor {
         this.velocidad = 2;
     }
 
+    //Método para detectar colisiones con el entorno
+    public boolean colisionaCon(double otroX, double otroY, double otroAncho, double otroAlto) {
+        boolean coincideX = Math.abs(this.x - otroX) < (this.ancho + otroAncho) / 2;
+        boolean coincideY =Math.abs(this.y - otroY) < (this.alto + otroAlto) / 2;
+
+        return coincideX && coincideY;
+    }
 
 
+        //método para dibujar al repartidor
     public void dibujar(Entorno entorno){
         entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.YELLOW);
     }
