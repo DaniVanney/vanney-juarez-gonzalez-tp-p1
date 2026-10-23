@@ -1,6 +1,7 @@
 package juego;
 
 import java.awt.Color;
+import java.awt.Image;
 import entorno.Entorno;
 import entorno.InterfaceJuego;
 
@@ -30,7 +31,17 @@ public class Juego extends InterfaceJuego {
     Juego() {
         this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
         this.mapa = new Mapa(0, 60, 800, 540);
-        this.repartidor = new Repartidor(400, 585);
+
+        // --- CARGAR IMAGEN CON ImageIO (Método infalible de Java) ---
+        java.awt.Image imgRepartidor = null;
+        try {
+            imgRepartidor = javax.imageio.ImageIO.read(new java.io.File("repartidor.png"));
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar repartidor.png");
+        }
+        
+        // Pasamos la imagen (si es null, dibuja el cuadrado amarillo)
+        this.repartidor = new Repartidor(400, 585, imgRepartidor);
 
         this.vidasIniciales = 3;
         this.vidas = this.vidasIniciales;
@@ -107,11 +118,18 @@ public class Juego extends InterfaceJuego {
             if (this.mapa.hayColision(this.repartidor)) this.repartidor.y = yAnterior;
         }
 
+        // Retirar pedido (COLISIÓN DIRECTA CON EL NEGOCIO)
         // ---- Retirar pedido del negocio ----
         if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Negocio negocio = this.pedido.origen;
+            
+            // Verifica si el mouse está sobre el negocio
             boolean clicEnNegocio = negocio.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
+            
+            // Calcula la distancia real del repartidor al centro del negocio
             double dist = Math.sqrt(Math.pow(this.repartidor.x - negocio.x, 2) + Math.pow(this.repartidor.y - negocio.y, 2));
+            
+            // Si el clic fue en el negocio Y el repartidor está a menos de 60 px de su centro
             if (clicEnNegocio && dist < 60) {
                 this.pedido.retirar();
             }
@@ -135,6 +153,7 @@ public class Juego extends InterfaceJuego {
         // Entregar pedido (COLISIÓN DIRECTA CON LA CASA)
         if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Casa casa = this.pedido.destino;
+            // Verifica si está tocando la casa
             if (this.repartidor.colisionaCon(casa.x, casa.y, casa.ancho, casa.alto)) {
                 this.pedido.entregar();
                 this.pedidosEntregados++;
