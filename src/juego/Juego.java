@@ -15,6 +15,8 @@ public class Juego extends InterfaceJuego
 	Repartidor repartidor;
 	Pedido pedido;
 	
+	int pedidosEntregados;
+	
 	// Variables y métodos propios de cada grupo
 	// ...
 	
@@ -37,6 +39,8 @@ public class Juego extends InterfaceJuego
 
 		this.pedido = new Pedido(this.mapa.negocios[indiceNegocio], this.mapa.casas[indiceCasa]);
 		this.pedido.recibirEnNegocio();
+
+		this.pedidosEntregados =0;
 
 
 		// Inicia el juego!
@@ -95,7 +99,7 @@ public class Juego extends InterfaceJuego
     		}
 		}
 
-
+			//bloque para retirar el pedido del negocio
 		if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
 
     		Negocio negocio = this.pedido.origen;
@@ -109,7 +113,7 @@ public class Juego extends InterfaceJuego
         		this.pedido.retirar();
     		}
 		}
-
+		//Bloque para concretar la entrega del pedido
 		if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
 
     		Casa casa = this.pedido.destino;
@@ -119,6 +123,7 @@ public class Juego extends InterfaceJuego
 
     		if (sobreFlecha && clicEnCasa) {
         		this.pedido.entregar();
+    			this.pedidosEntregados++;
     		}
 		}
 
@@ -145,6 +150,7 @@ public class Juego extends InterfaceJuego
 		this.entorno.cambiarFont("Arial", 20, Color.WHITE);
 		this.entorno.escribirTexto("Delivery Rush", 20, 38);
 		this.entorno.escribirTexto("Pedido: " + this.pedido.estado, 210,38);
+		this.entorno.escribirTexto(aaaaaaaaaaaaa"Entregados: " + this.pedidosEntregados, 500, 38);
 		
 	}
 
