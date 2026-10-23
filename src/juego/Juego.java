@@ -47,11 +47,24 @@ public class Juego extends InterfaceJuego
 		// ...
 
 		if (this.entorno.estaPresionada('d')) {
+    		double xAnterior = this.repartidor.x;
+
     		this.repartidor.moverDerecha(this.mapa.x + this.mapa.ancho);
+
+    		if (this.mapa.hayColision(this.repartidor)) {
+        		this.repartidor.x = xAnterior;
+    		}
 		}
 
+		
 		if (this.entorno.estaPresionada('a')) {
+    		double xAnterior = this.repartidor.x;
+
     		this.repartidor.moverIzquierda(this.mapa.x);
+
+    		if (this.mapa.hayColision(this.repartidor)) {
+        		this.repartidor.x = xAnterior;
+    		}
 		}
 
 		if (this.entorno.estaPresionada('w')) {
