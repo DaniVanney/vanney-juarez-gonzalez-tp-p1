@@ -150,8 +150,9 @@ public class Juego extends InterfaceJuego
 		this.entorno.cambiarFont("Arial", 20, Color.WHITE);
 		this.entorno.escribirTexto("Delivery Rush", 20, 38);
 		this.entorno.escribirTexto("Pedido: " + this.pedido.estado, 210,38);
-		this.entorno.escribirTexto(aaaaaaaaaaaaa"Entregados: " + this.pedidosEntregados, 500, 38);
-		
+		String entregados = "Entregados: " + this.pedidosEntregados;
+		// ...
+		this.entorno.escribirTexto(entregados, 260, 38);
 	}
 
 	
