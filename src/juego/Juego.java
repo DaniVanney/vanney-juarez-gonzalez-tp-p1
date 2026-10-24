@@ -28,6 +28,8 @@ public class Juego extends InterfaceJuego {
     int pedidosPerdidosParaPerder;
     int vidasIniciales;
 
+	String estadoJuego;
+
     Juego() {
         this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
         this.mapa = new Mapa(0, 60, 800, 540);
@@ -93,6 +95,12 @@ public class Juego extends InterfaceJuego {
     }
 
     public void tick() {
+
+		if (!this.estadoJuego.equals("Jugando")){
+			this.dibujarPantallaFinal(this.estadoJuego);
+			return;
+		}
+
         this.ticks++;
         this.ticksPedidoActual++;
 
@@ -227,14 +235,16 @@ public class Juego extends InterfaceJuego {
         }
 
         // Victoria / Derrota
-        if (this.vidas <= 0 || this.pedidosPerdidos >= this.pedidosPerdidosParaPerder) {
-            this.dibujarPantallaFinal("PERDISTE");
-            return;
-        }
-        if (this.pedidosEntregados >= this.pedidosParaGanar) {
-            this.dibujarPantallaFinal("GANASTE");
-            return;
-        }
+        if (this.vidas <= 0|| this.pedidosPerdidos >= this.pedidosPerdidosParaPerder) {
+	    	this.estadoJuego = "PERDISTE";
+		} else if (this.pedidosEntregados >= this.pedidosParaGanar) {
+    		this.estadoJuego = "GANASTE";
+		}
+
+		if (!this.estadoJuego.equals("Jugando")) {
+    		this.dibujarPantallaFinal(this.estadoJuego);
+    		return;
+		}
 
         // ---- DIBUJAR ----
         this.mapa.dibujar(this.entorno);
