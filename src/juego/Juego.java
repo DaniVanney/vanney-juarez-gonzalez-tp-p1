@@ -67,6 +67,7 @@ public class Juego extends InterfaceJuego {
         this.generarEnemigo(3);
 
         this.crearNuevoPedido();
+		this.estadoJuego = "Jugando";
         this.entorno.iniciar();
     }
 
