@@ -49,17 +49,35 @@ public class Bomba {
     }
 
     public boolean afectaA(double otroX, double otroY, double otroAncho, double otroAlto) {
-        boolean coincideX = Math.abs(this.x - otroX) < (this.anchoExplosion + otroAncho) / 2;
-        boolean coincideY = Math.abs(this.y - otroY) < (this.altoExplosion + otroAlto) / 2;
+        if (this.terminada()) {
+            return false;
+        }
+
+        if (!this.explotando) {
+            double distanciaX = Math.max(Math.abs(this.x - otroX) - otroAncho / 2, 0);
+
+            double distanciaY = Math.max(Math.abs(this.y - otroY) - otroAlto / 2, 0);
+
+            return distanciaX * distanciaX + distanciaY * distanciaY <= 36;
+        }
+
+        boolean coincideX =Math.abs(this.x - otroX) < (this.anchoExplosion + otroAncho) / 2;
+
+        boolean coincideY =Math.abs(this.y - otroY) < (this.altoExplosion + otroAlto) / 2;
+
         return coincideX && coincideY;
     }
 
     public void dibujar(Entorno entorno) {
-        if (!this.explotando) {
-            entorno.dibujarCirculo(this.x, this.y, 12, Color.BLACK);
+        if (this.terminada()) {
+            return;
+        }
 
-            entorno.dibujarRectangulo(this.x, this.y,
-                    this.anchoExplosion, this.altoExplosion, 0, new Color(255, 120, 0));
+        if (this.explotando) {
+            entorno.dibujarRectangulo(this.x, this.y,this.anchoExplosion, this.altoExplosion,0, new Color(255, 120, 0));
+        } 
+        else {
+            entorno.dibujarCirculo(this.x, this.y, 12, Color.BLACK);
         }
     }
 }
