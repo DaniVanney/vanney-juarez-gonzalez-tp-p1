@@ -1,18 +1,19 @@
 package juego;
 
 import java.awt.Color;
+import java.awt.Image;
 import entorno.Entorno;
 
 public class Mapa {
-    double x;
-    double y;
-    double ancho;
-    double alto;
+	 double x;
+	 double y;
+	 double ancho;
+	 double alto;
 
-    int filas;
-    int columnas;
-    int anchoCalle;
-
+	 int filas;
+	 int columnas;
+	 int anchoCalle;
+	    
     Casa[] casas;
     Negocio[] negocios;
 
@@ -21,10 +22,22 @@ public class Mapa {
         this.y = y;
         this.ancho = ancho;
         this.alto = alto;
-
         this.filas = 4;
         this.columnas = 4;
         this.anchoCalle = 30;
+
+        //  CARGAR LAS DISTINTAS CASAS Y NEGOCIOS
+        Image[] imagenesCasas = new Image[3]; 
+        Image imgNegocio = null;
+        try {
+            imagenesCasas[0] = javax.imageio.ImageIO.read(new java.io.File("casa_dos.png"));
+            imagenesCasas[1] = javax.imageio.ImageIO.read(new java.io.File("casa_uno.png"));
+            imagenesCasas[2] = javax.imageio.ImageIO.read(new java.io.File("casa_tres.png"));
+            imgNegocio = javax.imageio.ImageIO.read(new java.io.File("negocio.png"));
+        } catch (Exception e) {
+            System.out.println("No se pudieron cargar las imágenes.");
+        }
+        // ---------------------------------------------
 
         this.casas = new Casa[this.filas * this.columnas * 3];
         this.negocios = new Negocio[this.filas * this.columnas];
@@ -39,14 +52,20 @@ public class Mapa {
                 int indiceNegocio = fila * this.columnas + columna;
                 int indiceCasa = indiceNegocio * 3;
 
-                this.casas[indiceCasa] = new Casa(inicioX + 40, inicioY + 25, 50, 30);
-                this.casas[indiceCasa + 1] = new Casa(inicioX + 120, inicioY + 25, 50, 30);
-                this.casas[indiceCasa + 2] = new Casa(inicioX + 40, inicioY + 70, 50, 30);
-                this.negocios[indiceNegocio] = new Negocio(inicioX + 120, inicioY + 70, 50, 30);
+        
+                int azar1 = (int)(Math.random() * imagenesCasas.length);
+                int azar2 = (int)(Math.random() * imagenesCasas.length);
+                int azar3 = (int)(Math.random() * imagenesCasas.length);
+
+         
+                this.casas[indiceCasa] = new Casa(inicioX + 40, inicioY + 25, 50, 30, imagenesCasas[azar1]);
+                this.casas[indiceCasa + 1] = new Casa(inicioX + 120, inicioY + 25, 50, 30, imagenesCasas[azar2]);
+                this.casas[indiceCasa + 2] = new Casa(inicioX + 40, inicioY + 70, 50, 30, imagenesCasas[azar3]);
+                
+                this.negocios[indiceNegocio] = new Negocio(inicioX + 120, inicioY + 70, 50, 30, imgNegocio);
             }
         }
     }
-
     public boolean hayColision(Repartidor repartidor) {
         for (int i = 0; i < this.casas.length; i++) {
             Casa casa = this.casas[i];
