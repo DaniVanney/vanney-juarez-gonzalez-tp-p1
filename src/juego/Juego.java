@@ -73,9 +73,10 @@ public class Juego extends InterfaceJuego {
         this.entorno.iniciar();
     }
 
-    private void generarEnemigo(int indice) {
+    void generarEnemigo(int indice) {
         boolean horizontal = Math.random() < 0.5;
-        boolean dejaBombas = Math.random() < 0.4;
+        // El lugar cero garantiza al menos un enemigo que deja bombas.
+        boolean dejaBombas = indice == 0 || Math.random() < 0.4;
         double x, y;
         if (horizontal) {
             int filaCalle = (int) (Math.random() * (this.mapa.filas + 1));
@@ -85,6 +86,22 @@ public class Juego extends InterfaceJuego {
             int colCalle = (int) (Math.random() * (this.mapa.columnas + 1));
             x = this.mapa.obtenerXCentroCalleVertical(colCalle);
             y = this.mapa.y + 20 + Math.random() * (this.mapa.alto - 40);
+        }
+        // Evitar que un reemplazo aparezca encima del repartidor.
+        if (Math.abs(x - this.repartidor.x) < 80 && Math.abs(y - this.repartidor.y) < 80) {
+            if (horizontal) {
+                if (this.repartidor.x < this.mapa.x + this.mapa.ancho / 2) {
+                    x = this.mapa.x + this.mapa.ancho - 20;
+                } else {
+                    x = this.mapa.x + 20;
+                }
+            } else {
+                if (this.repartidor.y < this.mapa.y + this.mapa.alto / 2) {
+                    y = this.mapa.y + this.mapa.alto - 20;
+                } else {
+                    y = this.mapa.y + 20;
+                }
+            }
         }
         this.enemigos[indice] = new Enemigo(x, y, horizontal, dejaBombas, this.tiempoActual);
     }
@@ -285,7 +302,15 @@ public class Juego extends InterfaceJuego {
         this.dibujarPanel();
     }
 
-    private void agregarBomba(Bomba b) {
+    void agregarBomba(Bomba b) {
+        // Reutilizar los lugares de bombas que ya terminaron.
+        for (int i = 0; i < this.bombas.length; i++) {
+            if (this.bombas[i] == null || this.bombas[i].terminada()) {
+                this.bombas[i] = null;
+                this.bombas[i] = b;
+                return;
+            }
+        }
         Bomba[] nuevo = new Bomba[this.bombas.length + 1];
         for (int i = 0; i < this.bombas.length; i++) nuevo[i] = this.bombas[i];
         nuevo[this.bombas.length] = b;
