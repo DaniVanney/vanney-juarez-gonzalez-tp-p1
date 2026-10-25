@@ -9,11 +9,13 @@ public class Bomba {
     double anchoExplosion;
     double altoExplosion;
 
-    int temporizador;
+    long tiempoCreacion;
+    long tiempoTranscurrido;
+    int demoraExplosion;
+    int duracionExplosion;
     boolean explotando;
-    int tiempoExplosion;
 
-    public Bomba(double x, double y, double anchoCalle, boolean esHorizontal) {
+    public Bomba(double x, double y, double anchoCalle, boolean esHorizontal, long tiempoActual) {
         this.x = x;
         this.y = y;
         
@@ -26,26 +28,20 @@ public class Bomba {
             this.altoExplosion = anchoCalle * 3;   // Largo de la calle
         }
 
-        this.temporizador = 120; // ~2 segundos
+        this.tiempoCreacion = tiempoActual;
+        this.tiempoTranscurrido = 0;
+        this.demoraExplosion = 2000;
+        this.duracionExplosion = 500;
         this.explotando = false;
-        this.tiempoExplosion = 0;
     }
 
-    public void actualizar() {
-        if (!this.explotando) {
-            this.temporizador--;
-            if (this.temporizador <= 0) {
-                this.explotando = true;
-                this.tiempoExplosion = 30; // 
-            }
-        } else {
-            this.tiempoExplosion--;
-        }
+    public void actualizar(long tiempoActual) {
+        this.tiempoTranscurrido = tiempoActual - this.tiempoCreacion;
+        this.explotando = this.tiempoTranscurrido >= this.demoraExplosion;
     }
-
 
     public boolean terminada() {
-        return this.explotando && this.tiempoExplosion <= 0;
+        return this.tiempoTranscurrido >= this.demoraExplosion + this.duracionExplosion;
     }
 
     public boolean afectaA(double otroX, double otroY, double otroAncho, double otroAlto) {

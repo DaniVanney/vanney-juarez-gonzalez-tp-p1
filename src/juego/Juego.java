@@ -20,9 +20,9 @@ public class Juego extends InterfaceJuego {
     int pedidosPerdidos;
     int enemigosEliminados;
     int vidas;
-    int ticks;
+    long tiempoActual;
+    long inicioPedido;
     int tiempoLimitePedido;
-    int ticksPedidoActual;
 
     int pedidosParaGanar;
     int pedidosPerdidosParaPerder;
@@ -49,13 +49,13 @@ public class Juego extends InterfaceJuego {
         this.vidas = this.vidasIniciales;
         this.pedidosParaGanar = 5;
         this.pedidosPerdidosParaPerder = 5;
-        this.tiempoLimitePedido = 60 * 30; // 30 seg
+        this.tiempoLimitePedido = 30000; // Milisegundos: 30 segundos.
 
         this.pedidosEntregados = 0;
         this.pedidosPerdidos = 0;
         this.enemigosEliminados = 0;
-        this.ticks = 0;
-        this.ticksPedidoActual = 0;
+        this.tiempoActual = 0;
+        this.inicioPedido = 0;
 
         this.bombas = new Bomba[0];
         this.proyectil = null;
@@ -84,7 +84,7 @@ public class Juego extends InterfaceJuego {
             x = this.mapa.obtenerXCentroCalleVertical(colCalle);
             y = this.mapa.y + 20 + Math.random() * (this.mapa.alto - 40);
         }
-        this.enemigos[indice] = new Enemigo(x, y, horizontal, dejaBombas);
+        this.enemigos[indice] = new Enemigo(x, y, horizontal, dejaBombas, this.tiempoActual);
     }
 
     private void crearNuevoPedido() {
@@ -92,7 +92,7 @@ public class Juego extends InterfaceJuego {
         int indiceCasa = (int) (Math.random() * this.mapa.casas.length);
         this.pedido = new Pedido(this.mapa.negocios[indiceNegocio], this.mapa.casas[indiceCasa]);
         this.pedido.recibirEnNegocio();
-        this.ticksPedidoActual = 0;
+        this.inicioPedido = this.tiempoActual;
     }
 
     public void tick() {
@@ -102,8 +102,15 @@ public class Juego extends InterfaceJuego {
 			return;
 		}
 
-        this.ticks++;
-        this.ticksPedidoActual++;
+        // El reloj del entorno mide milisegundos, sin suponer una cantidad de ticks.
+        this.tiempoActual = this.entorno.tiempo();
+        boolean pedidoVencido = this.pedido.estaActivo()
+            && this.tiempoActual - this.inicioPedido >= this.tiempoLimitePedido;
+        if (pedidoVencido) {
+            this.pedido.perder();
+            this.pedidosPerdidos++;
+            this.crearNuevoPedido();
+        }
 
         // Movimiento del repartidor
         if (this.entorno.estaPresionada('d') || this.entorno.estaPresionada(this.entorno.TECLA_DERECHA)) {
@@ -129,7 +136,7 @@ public class Juego extends InterfaceJuego {
 
         // Retirar pedido (COLISIÓN DIRECTA CON EL NEGOCIO)
         // ---- Retirar pedido del negocio ----
-        if (this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+        if (!pedidoVencido && this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Negocio negocio = this.pedido.origen;
             
             // Verifica si el mouse está sobre el negocio
@@ -145,7 +152,7 @@ public class Juego extends InterfaceJuego {
         }
 
         // ---- Entregar pedido ----
-        if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+        if (!pedidoVencido && this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Casa casa = this.pedido.destino;
             
             boolean clicEnCasa = casa.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
@@ -160,7 +167,7 @@ public class Juego extends InterfaceJuego {
         }
 
         // Entregar pedido (COLISIÓN DIRECTA CON LA CASA)
-        if (this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+        if (!pedidoVencido && this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
             Casa casa = this.pedido.destino;
             // Verifica si está tocando la casa
             if (this.repartidor.colisionaCon(casa.x, casa.y, casa.ancho, casa.alto)) {
@@ -168,13 +175,6 @@ public class Juego extends InterfaceJuego {
                 this.pedidosEntregados++;
                 this.crearNuevoPedido();
             }
-        }
-
-        // Pedido perdido por tiempo
-        if (this.pedido.estaActivo() && this.ticksPedidoActual > this.tiempoLimitePedido) {
-            this.pedido.perder();
-            this.pedidosPerdidos++;
-            this.crearNuevoPedido();
         }
 
         // Disparo
@@ -205,12 +205,10 @@ public class Juego extends InterfaceJuego {
             Enemigo e = this.enemigos[i];
             if (e == null) continue;
             e.mover(this.mapa.x, this.mapa.x + this.mapa.ancho, this.mapa.y, this.mapa.y + this.mapa.alto);
-            if (e.dejaBombas) {
-                e.temporizadorBomba--;
-                if (e.temporizadorBomba <= 0) {
-                	this.agregarBomba(new Bomba(e.x, e.y, this.mapa.anchoCalle, e.horizontal));
-                    e.temporizadorBomba = e.intervaloBomba;
-                }
+            if (e.debeDejarBomba(this.tiempoActual)) {
+                this.agregarBomba(new Bomba(
+                    e.x, e.y, this.mapa.anchoCalle, e.horizontal, this.tiempoActual
+                ));
             }
             if (e.colisionaCon(this.repartidor.x, this.repartidor.y, this.repartidor.ancho, this.repartidor.alto)) {
                 this.vidas--;
@@ -228,7 +226,7 @@ public class Juego extends InterfaceJuego {
         for (int i = 0; i < this.bombas.length; i++) {
             Bomba b = this.bombas[i];
             if (b == null) continue;
-            b.actualizar();
+            b.actualizar(this.tiempoActual);
             if (b.afectaA(this.repartidor.x, this.repartidor.y, this.repartidor.ancho, this.repartidor.alto)) {
                 this.vidas = 0; 
             }
@@ -281,7 +279,7 @@ public class Juego extends InterfaceJuego {
         this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30, 30, 30));
         this.entorno.cambiarFont("Arial", 14, Color.WHITE);
 
-        String tiempo = "Tiempo: " + (this.ticks / 60) + "s";
+        String tiempo = "Tiempo: " + (this.tiempoActual / 1000) + "s";
         String vidasStr = "Vidas: " + this.vidas;
         String entregados = "Entregados: " + this.pedidosEntregados;
         String eliminados = "Eliminados: " + this.enemigosEliminados;

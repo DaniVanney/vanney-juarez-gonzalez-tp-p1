@@ -20,12 +20,11 @@ public class Enemigo {
     // Puede dejar bombas o no
     boolean dejaBombas;
 
-    // Tiempo (en ticks) para colocar la próxima bomba
-    int temporizadorBomba;
-    // Tiempo de espera entre bombas (en ticks)
+    // Todos los tiempos se expresan en milisegundos.
+    long ultimaBomba;
     int intervaloBomba;
 
-    public Enemigo(double x, double y, boolean horizontal, boolean dejaBombas) {
+    public Enemigo(double x, double y, boolean horizontal, boolean dejaBombas, long tiempoActual) {
         this.x = x;
         this.y = y;
         this.ancho = 25;
@@ -35,8 +34,17 @@ public class Enemigo {
         this.dejaBombas = dejaBombas;
         this.direccionX = 1;
         this.direccionY = 1;
-        this.intervaloBomba = 240; // ~4 segundos a 60 fps
-        this.temporizadorBomba = this.intervaloBomba;
+        this.intervaloBomba = 4000;
+        this.ultimaBomba = tiempoActual;
+    }
+
+    // Devuelve true una sola vez por intervalo y registra el momento de la bomba.
+    public boolean debeDejarBomba(long tiempoActual) {
+        if (this.dejaBombas && tiempoActual - this.ultimaBomba >= this.intervaloBomba) {
+            this.ultimaBomba = tiempoActual;
+            return true;
+        }
+        return false;
     }
 
     public void dibujar(Entorno entorno) {
