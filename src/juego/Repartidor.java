@@ -24,11 +24,14 @@ public class Repartidor {
         this.dirX = 0;
         this.dirY = -1; 
         this.img = img;
+        if (img != null) {
+            this.img = img.getScaledInstance((int) this.ancho, (int) this.alto, Image.SCALE_SMOOTH);
+        }
     }
 
     public boolean colisionaCon(double otroX, double otroY, double otroAncho, double otroAlto) {
-        boolean coincideX = Math.abs(this.x - otroX) <= (this.ancho + otroAncho) / 2 + 10;
-        boolean coincideY = Math.abs(this.y - otroY) <= (this.alto + otroAlto) / 2 + 10;
+        boolean coincideX = Math.abs(this.x - otroX) < (this.ancho + otroAncho) / 2;
+        boolean coincideY = Math.abs(this.y - otroY) < (this.alto + otroAlto) / 2;
         return coincideX && coincideY;
     }
 
@@ -40,13 +43,13 @@ public class Repartidor {
             if (this.dirX == 1) {
                 angulo = 0; // 
             } else if (this.dirX == -1) {
-                angulo = 0; 
+                angulo = Math.PI;
             } else if (this.dirY == -1) {
                 angulo = -Math.PI / 2; 
             } else if (this.dirY == 1) {
                 angulo = Math.PI / 2; }
             
-            entorno.dibujarImagen(this.img, this.x, this.y, angulo, 0.15);
+            entorno.dibujarImagen(this.img, this.x, this.y, angulo, 1);
         } else {
             entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, Color.YELLOW);
         }

@@ -66,7 +66,32 @@ public class Mapa {
             }
         }
     }
+    // El repartidor debe permanecer por completo sobre las calles.
+    public boolean estaEnCalle(Repartidor repartidor) {
+        if (repartidor.x - repartidor.ancho / 2 < this.x
+                || repartidor.x + repartidor.ancho / 2 > this.x + this.ancho
+                || repartidor.y - repartidor.alto / 2 < this.y
+                || repartidor.y + repartidor.alto / 2 > this.y + this.alto) {
+            return false;
+        }
+        double anchoCuadra = (this.ancho - (this.columnas + 1) * this.anchoCalle) / this.columnas;
+        double altoCuadra = (this.alto - (this.filas + 1) * this.anchoCalle) / this.filas;
+        for (int fila = 0; fila < this.filas; fila++) {
+            double centroY = this.y + this.anchoCalle + fila * (altoCuadra + this.anchoCalle) + altoCuadra / 2;
+            for (int columna = 0; columna < this.columnas; columna++) {
+                double centroX = this.x + this.anchoCalle + columna * (anchoCuadra + this.anchoCalle) + anchoCuadra / 2;
+                if (repartidor.colisionaCon(centroX, centroY, anchoCuadra, altoCuadra)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean hayColision(Repartidor repartidor) {
+        if (!this.estaEnCalle(repartidor)) {
+            return true;
+        }
         for (int i = 0; i < this.casas.length; i++) {
             Casa casa = this.casas[i];
             if (repartidor.colisionaCon(casa.x, casa.y, casa.ancho, casa.alto)) return true;
