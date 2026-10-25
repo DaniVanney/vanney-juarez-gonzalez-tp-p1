@@ -17,11 +17,14 @@ public class Negocio {
         this.ancho = ancho;
         this.alto = alto;
         this.img = img;
+        if (img != null) {
+            this.img = img.getScaledInstance((int) this.ancho, (int) this.alto, Image.SCALE_SMOOTH);
+        }
     }
 
     public void dibujar(Entorno entorno){
         if (this.img != null) {
-            entorno.dibujarImagen(this.img, this.x, this.y, 0, 0.12); 
+            entorno.dibujarImagen(this.img, this.x, this.y, 0, 1); 
         } else {
             entorno.dibujarRectangulo(this.x, this.y, this.ancho, this.alto, 0, new Color(70, 130, 200));
         }
