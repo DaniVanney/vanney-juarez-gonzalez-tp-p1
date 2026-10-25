@@ -1,12 +1,11 @@
 package juego;
 
 import java.awt.Color;
-import java.awt.Image;
 import entorno.Entorno;
 import entorno.InterfaceJuego;
 
 public class Juego extends InterfaceJuego {
-    private Entorno entorno;
+    Entorno entorno;
 
     Mapa mapa;
     Repartidor repartidor;
@@ -29,13 +28,13 @@ public class Juego extends InterfaceJuego {
     int pedidosRobadosParaPerder;
     int vidasIniciales;
 
-	String estadoJuego;
+    String estadoJuego;
 
     Juego() {
         this.entorno = new Entorno(this, "Delivery Rush", 800, 600);
         this.mapa = new Mapa(0, 60, 800, 540);
 
-        // --- CARGAR IMAGEN CON ImageIO (Método infalible de Java) ---
+        // Cargar la imagen; si no se encuentra, se dibuja un rectángulo.
         java.awt.Image imgRepartidor = null;
         try {
             imgRepartidor = javax.imageio.ImageIO.read(new java.io.File("repartidor.png"));
@@ -69,7 +68,7 @@ public class Juego extends InterfaceJuego {
         this.generarEnemigo(3);
 
         this.crearNuevoPedido();
-		this.estadoJuego = "Jugando";
+        this.estadoJuego = "Jugando";
         this.entorno.iniciar();
     }
 
@@ -106,7 +105,7 @@ public class Juego extends InterfaceJuego {
         this.enemigos[indice] = new Enemigo(x, y, horizontal, dejaBombas, this.tiempoActual);
     }
 
-    private void crearNuevoPedido() {
+    void crearNuevoPedido() {
         int indiceNegocio = (int) (Math.random() * this.mapa.negocios.length);
         int indiceCasa = (int) (Math.random() * this.mapa.casas.length);
         this.pedido = new Pedido(this.mapa.negocios[indiceNegocio], this.mapa.casas[indiceCasa]);
@@ -116,10 +115,10 @@ public class Juego extends InterfaceJuego {
 
     public void tick() {
 
-		if (!this.estadoJuego.equals("Jugando")){
-			this.dibujarPantallaFinal(this.estadoJuego);
-			return;
-		}
+        if (!this.estadoJuego.equals("Jugando")) {
+            this.dibujarPantallaFinal(this.estadoJuego);
+            return;
+        }
 
         // El reloj del entorno mide milisegundos, sin suponer una cantidad de ticks.
         this.tiempoActual = this.entorno.tiempo();
@@ -267,17 +266,17 @@ public class Juego extends InterfaceJuego {
             if (b.terminada()) this.bombas[i] = null;
         }
 
-        // Victoria / Derrota
-        if (this.vidas <= 0|| this.pedidosRobados >= this.pedidosRobadosParaPerder) {
-	    	this.estadoJuego = "PERDISTE";
-		} else if (this.pedidosEntregados >= this.pedidosParaGanar) {
-    		this.estadoJuego = "GANASTE";
-		}
+        // Una derrota tiene prioridad si ocurre al mismo tiempo que la última entrega.
+        if (this.vidas <= 0 || this.pedidosRobados >= this.pedidosRobadosParaPerder) {
+            this.estadoJuego = "PERDISTE";
+        } else if (this.pedidosEntregados >= this.pedidosParaGanar) {
+            this.estadoJuego = "GANASTE";
+        }
 
-		if (!this.estadoJuego.equals("Jugando")) {
-    		this.dibujarPantallaFinal(this.estadoJuego);
-    		return;
-		}
+        if (!this.estadoJuego.equals("Jugando")) {
+            this.dibujarPantallaFinal(this.estadoJuego);
+            return;
+        }
 
         // ---- DIBUJAR ----
         this.mapa.dibujar(this.entorno);
@@ -317,7 +316,7 @@ public class Juego extends InterfaceJuego {
         this.bombas = nuevo;
     }
 
-    private void dibujarPanel() {
+    void dibujarPanel() {
         this.entorno.dibujarRectangulo(400, 30, 800, 60, 0, new Color(30, 30, 30));
         this.entorno.cambiarFont("Arial", 14, Color.WHITE);
 
@@ -327,15 +326,20 @@ public class Juego extends InterfaceJuego {
         String eliminados = "Eliminados: " + this.enemigosEliminados;
         String estado = "Pedido: " + this.pedido.estado;
 
-        this.entorno.escribirTexto(tiempo, 15, 38);
-        this.entorno.escribirTexto(vidasStr, 120, 38);
-        this.entorno.escribirTexto(entregados, 210, 38);
-        this.entorno.escribirTexto(eliminados, 360, 38);
-        this.entorno.escribirTexto(estado, 530, 38);
+        long restante = this.tiempoLimitePedido - (this.tiempoActual - this.inicioPedido);
+        long segundosRestantes = Math.max(0, (restante + 999) / 1000);
+
+        this.entorno.escribirTexto(tiempo, 15, 24);
+        this.entorno.escribirTexto(vidasStr, 160, 24);
+        this.entorno.escribirTexto(entregados, 280, 24);
+        this.entorno.escribirTexto(eliminados, 460, 24);
+        this.entorno.escribirTexto(estado, 15, 48);
+        this.entorno.escribirTexto("Plazo: " + segundosRestantes + "s", 280, 48);
+        this.entorno.escribirTexto("Robados: " + this.pedidosRobados, 460, 48);
     }
 
-    private void dibujarPantallaFinal(String mensaje) {
-        this.entorno.dibujarRectangulo(400, 300, 800, 600, 0, new Color(0, 0, 0, 200));
+    void dibujarPantallaFinal(String mensaje) {
+        this.entorno.dibujarRectangulo(400, 300, 800, 600, 0, Color.BLACK);
         this.entorno.cambiarFont("Arial", 48, Color.WHITE);
         this.entorno.escribirTexto(mensaje, 300, 300);
     }
