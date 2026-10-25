@@ -18,6 +18,7 @@ public class Juego extends InterfaceJuego {
 
     int pedidosEntregados;
     int pedidosPerdidos;
+    int pedidosRobados;
     int enemigosEliminados;
     int vidas;
     long tiempoActual;
@@ -25,7 +26,7 @@ public class Juego extends InterfaceJuego {
     int tiempoLimitePedido;
 
     int pedidosParaGanar;
-    int pedidosPerdidosParaPerder;
+    int pedidosRobadosParaPerder;
     int vidasIniciales;
 
 	String estadoJuego;
@@ -48,11 +49,12 @@ public class Juego extends InterfaceJuego {
         this.vidasIniciales = 3;
         this.vidas = this.vidasIniciales;
         this.pedidosParaGanar = 5;
-        this.pedidosPerdidosParaPerder = 5;
+        this.pedidosRobadosParaPerder = 5;
         this.tiempoLimitePedido = 30000; // Milisegundos: 30 segundos.
 
         this.pedidosEntregados = 0;
         this.pedidosPerdidos = 0;
+        this.pedidosRobados = 0;
         this.enemigosEliminados = 0;
         this.tiempoActual = 0;
         this.inicioPedido = 0;
@@ -154,46 +156,40 @@ public class Juego extends InterfaceJuego {
             }
         }
 
-        // Retirar pedido (COLISIÓN DIRECTA CON EL NEGOCIO)
-        // ---- Retirar pedido del negocio ----
-        if (!pedidoVencido && this.pedido.estado.equals("Esperando") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
-            Negocio negocio = this.pedido.origen;
-            
-            // Verifica si el mouse está sobre el negocio
-            boolean clicEnNegocio = negocio.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
-            
-            // Calcula la distancia real del repartidor al centro del negocio
-            double dist = Math.sqrt(Math.pow(this.repartidor.x - negocio.x, 2) + Math.pow(this.repartidor.y - negocio.y, 2));
-            
-            // Si el clic fue en el negocio Y el repartidor está a menos de 60 px de su centro
-            if (clicEnNegocio && dist < 60) {
-                this.pedido.retirar();
-            }
-        }
+        // Retiro y entrega: estar sobre la flecha y hacer clic en el edificio.
+        if (!pedidoVencido && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
+            if (this.pedido.estado.equals("Esperando")) {
+                Negocio negocio = this.pedido.origen;
+                double yFlecha = this.mapa.obtenerYFlechaNegocio(negocio);
 
-        // ---- Entregar pedido ----
-        if (!pedidoVencido && this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
-            Casa casa = this.pedido.destino;
-            
-            boolean clicEnCasa = casa.contienePunto(this.entorno.mouseX(), this.entorno.mouseY());
-            
-            double dist = Math.sqrt(Math.pow(this.repartidor.x - casa.x, 2) + Math.pow(this.repartidor.y - casa.y, 2));
-            
-            if (clicEnCasa && dist < 60) {
-                this.pedido.entregar();
-                this.pedidosEntregados++;
-                this.crearNuevoPedido();
-            }
-        }
+                boolean sobreFlecha =
+                    Math.abs(this.repartidor.x - negocio.x) <= this.repartidor.ancho / 2
+                    && Math.abs(this.repartidor.y - yFlecha) <= this.repartidor.alto / 2;
 
-        // Entregar pedido (COLISIÓN DIRECTA CON LA CASA)
-        if (!pedidoVencido && this.pedido.estado.equals("En camino") && this.entorno.sePresionoBoton(this.entorno.BOTON_DERECHO)) {
-            Casa casa = this.pedido.destino;
-            // Verifica si está tocando la casa
-            if (this.repartidor.colisionaCon(casa.x, casa.y, casa.ancho, casa.alto)) {
-                this.pedido.entregar();
-                this.pedidosEntregados++;
-                this.crearNuevoPedido();
+                boolean clicCorrecto = negocio.contienePunto(
+                    this.entorno.mouseX(), this.entorno.mouseY()
+                );
+
+                if (sobreFlecha && clicCorrecto) {
+                    this.pedido.retirar();
+                }
+            } else if (this.pedido.estado.equals("En camino")) {
+                Casa casa = this.pedido.destino;
+                double yFlecha = this.mapa.obtenerYFlechaCasa(casa);
+
+                boolean sobreFlecha =
+                    Math.abs(this.repartidor.x - casa.x) <= this.repartidor.ancho / 2
+                    && Math.abs(this.repartidor.y - yFlecha) <= this.repartidor.alto / 2;
+
+                boolean clicCorrecto = casa.contienePunto(
+                    this.entorno.mouseX(), this.entorno.mouseY()
+                );
+
+                if (sobreFlecha && clicCorrecto) {
+                    this.pedido.entregar();
+                    this.pedidosEntregados++;
+                    this.crearNuevoPedido();
+                }
             }
         }
 
@@ -235,6 +231,7 @@ public class Juego extends InterfaceJuego {
                 if (this.pedido.estado.equals("En camino")) {
                     this.pedido.perder();
                     this.pedidosPerdidos++;
+                    this.pedidosRobados++;
                     this.crearNuevoPedido();
                 }
                 this.enemigos[i] = null;
@@ -254,7 +251,7 @@ public class Juego extends InterfaceJuego {
         }
 
         // Victoria / Derrota
-        if (this.vidas <= 0|| this.pedidosPerdidos >= this.pedidosPerdidosParaPerder) {
+        if (this.vidas <= 0|| this.pedidosRobados >= this.pedidosRobadosParaPerder) {
 	    	this.estadoJuego = "PERDISTE";
 		} else if (this.pedidosEntregados >= this.pedidosParaGanar) {
     		this.estadoJuego = "GANASTE";
@@ -269,7 +266,7 @@ public class Juego extends InterfaceJuego {
         this.mapa.dibujar(this.entorno);
 
         // Dibujar flechas
-        if (this.pedido.estado.equals("Esperando") || this.pedido.estado.equals("En camino")) {
+        if (this.pedido.estado.equals("En camino")) {
             this.mapa.dibujarFlechaCasaRoja(this.entorno, this.pedido.destino);
         }
         if (this.pedido.estado.equals("Esperando")) {
