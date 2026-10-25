@@ -116,22 +116,42 @@ public class Juego extends InterfaceJuego {
         if (this.entorno.estaPresionada('d') || this.entorno.estaPresionada(this.entorno.TECLA_DERECHA)) {
             double xAnterior = this.repartidor.x;
             this.repartidor.moverDerecha(this.mapa.x + this.mapa.ancho);
-            if (this.mapa.hayColision(this.repartidor)) this.repartidor.x = xAnterior;
+            if (this.mapa.hayColision(this.repartidor)) {
+                this.repartidor.x = xAnterior;
+            } else if (this.repartidor.x != xAnterior) {
+                this.repartidor.dirX = 1;
+                this.repartidor.dirY = 0;
+            }
         }
         if (this.entorno.estaPresionada('a') || this.entorno.estaPresionada(this.entorno.TECLA_IZQUIERDA)) {
             double xAnterior = this.repartidor.x;
             this.repartidor.moverIzquierda(this.mapa.x);
-            if (this.mapa.hayColision(this.repartidor)) this.repartidor.x = xAnterior;
+            if (this.mapa.hayColision(this.repartidor)) {
+                this.repartidor.x = xAnterior;
+            } else if (this.repartidor.x != xAnterior) {
+                this.repartidor.dirX = -1;
+                this.repartidor.dirY = 0;
+            }
         }
         if (this.entorno.estaPresionada('w') || this.entorno.estaPresionada(this.entorno.TECLA_ARRIBA)) {
             double yAnterior = this.repartidor.y;
             this.repartidor.moverArriba(this.mapa.y);
-            if (this.mapa.hayColision(this.repartidor)) this.repartidor.y = yAnterior;
+            if (this.mapa.hayColision(this.repartidor)) {
+                this.repartidor.y = yAnterior;
+            } else if (this.repartidor.y != yAnterior) {
+                this.repartidor.dirX = 0;
+                this.repartidor.dirY = -1;
+            }
         }
         if (this.entorno.estaPresionada('s') || this.entorno.estaPresionada(this.entorno.TECLA_ABAJO)) {
             double yAnterior = this.repartidor.y;
             this.repartidor.moverAbajo(this.mapa.y + this.mapa.alto);
-            if (this.mapa.hayColision(this.repartidor)) this.repartidor.y = yAnterior;
+            if (this.mapa.hayColision(this.repartidor)) {
+                this.repartidor.y = yAnterior;
+            } else if (this.repartidor.y != yAnterior) {
+                this.repartidor.dirX = 0;
+                this.repartidor.dirY = 1;
+            }
         }
 
         // Retirar pedido (COLISIÓN DIRECTA CON EL NEGOCIO)

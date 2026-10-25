@@ -57,8 +57,6 @@ public class Repartidor {
 
     public void moverDerecha(double limiteDerecho) {
         this.x = this.x + this.velocidad;
-        this.dirX = 1;
-        this.dirY = 0;
         if (this.x + this.ancho / 2 > limiteDerecho) {
             this.x = limiteDerecho - this.ancho / 2;
         }
@@ -66,8 +64,6 @@ public class Repartidor {
 
     public void moverIzquierda(double limiteIzquierdo) {
         this.x = this.x - this.velocidad;
-        this.dirX = -1;
-        this.dirY = 0;
         if (this.x - this.ancho / 2 < limiteIzquierdo) {
             this.x = limiteIzquierdo + this.ancho / 2;
         }
@@ -75,8 +71,6 @@ public class Repartidor {
 
     public void moverArriba(double limiteSuperior) {
         this.y = this.y - this.velocidad;
-        this.dirX = 0;
-        this.dirY = -1;
         if (this.y - this.alto / 2 < limiteSuperior) {
             this.y = limiteSuperior + this.alto / 2;
         }
@@ -84,8 +78,6 @@ public class Repartidor {
 
     public void moverAbajo(double limiteInferior) {
         this.y = this.y + this.velocidad;
-        this.dirX = 0;
-        this.dirY = 1;
         if (this.y + this.alto / 2 > limiteInferior) {
             this.y = limiteInferior - this.alto / 2;
         }
